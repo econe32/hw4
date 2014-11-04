@@ -88,11 +88,13 @@ $(function() {
 		  } else if(p.y > Q.height) { 
         Q.state.dec("lives",1);
         //Q.state.set("lives",2);
-        if (livesTxt > 1){
+        this.destroy();
+        Q.stage().trigger('newBall');
+        if (livesTxt == 1){
          // Q.state.set("score",0);
-          Q.stageScene('game');
-        }else
-  			 Q.stageScene('lose');
+           Q.stageScene('lose');
+        }
+  			
 		  }
 	  });
     },
@@ -141,6 +143,24 @@ $(function() {
     }
   });
 
+   Q.UI.Text.extend("Lives",{
+    init: function() {
+      this._super({
+        label: "Lives: 3",
+        x: 50,
+        y: 14,
+        color:"#FF0000",
+        size:20
+      });
+
+      Q.state.on("change.lives",this,"lives");
+    },
+
+    lives: function(lives) {
+      this.p.label = "Lives: " + lives;
+    }
+  });
+
    //Q.enableSound();
    Q.audio.enableHTML5Sound();
 
@@ -165,10 +185,10 @@ $(function() {
 
              var currLives = Q.state.get("lives");
             
-           var label = container.insert(new Q.UI.Text({x: -120, y: -195, 
-                                                   label: "Lives: " + currLives,
-                                                   color:"#FF0000",
-                                                   size:20}));
+           //var label = container.insert(new Q.UI.Text({x: -120, y: -195, 
+            //                                       label: "Lives: " + currLives,
+             //                                      color:"#FF0000",
+               //                                    size:20}));
       var blockCount=0;
       for(var x=0;x<6;x++) {
         for(var y=1;y<6;y++) {
@@ -183,6 +203,10 @@ $(function() {
         if(blockCount == 0) {
           Q.stageScene('win');
         }
+      });
+
+       stage.on('newBall',function() {
+        stage.insert(new Q.Ball());
       });
 
     }));
@@ -263,6 +287,7 @@ $(function() {
 
          Q.scene("hud",function(stage) {
     stage.insert(new Q.Score());
+    stage.insert(new Q.Lives());
   }, { stage: 1 });
 
 
