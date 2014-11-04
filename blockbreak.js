@@ -10,6 +10,17 @@ $(function() {
             controls:  [ ['left','<' ],[],[],[],['right','>' ] ]
   });
 
+  function goHTML5Audio() {
+    Q.assets = {};
+    
+    loadAssetsAndGo();
+  }
+
+  function goWebAudio() {
+    Q.assets = [];
+    Q.audio.enableWebAudioSound();
+    loadAssetsAndGo();
+  }
 
   Q.Sprite.extend("Paddle", {     // extend Sprite class to create Q.Paddle subclass
     init: function(p) {
@@ -63,22 +74,22 @@ $(function() {
 		  if(p.x < 5) { 
 			p.x = 5;
 			p.dx = 1;
-      Q.audio.play('powerdown.mp3');
+      Q.audio.play('powerdown');
 		  } else if(p.x > Q.width - 5) { 
 			p.dx = -1;
 			p.x = Q.width - 5;
-      Q.audio.play('powerdown.mp3');
+      Q.audio.play('powerdown');
 		  }
 
 		  if(p.y < 40) {
 			p.y = 40;
 			p.dy = 1;
-      Q.audio.play('powerdown.mp3');
+      Q.audio.play('powerdown');
 		  } else if(p.y > Q.height) { 
         Q.state.dec("lives",1);
         //Q.state.set("lives",2);
         if (livesTxt > 1){
-          Q.state.set("score",0);
+         // Q.state.set("score",0);
           Q.stageScene('game');
         }else
   			 Q.stageScene('lose');
@@ -89,7 +100,7 @@ $(function() {
 	collision: function(col) {                // collision method
 		if (col.obj.isA("Paddle")) {
 //			alert("collision with paddle");
-        Q.audio.play('powerup.mp3');
+        Q.audio.play('powerup');
 			this.p.dy = -1;
 		} else if (col.obj.isA("Block")) {
 //			alert("collision with block");
@@ -130,14 +141,18 @@ $(function() {
     }
   });
 
-   Q.enableSound();
+   //Q.enableSound();
+   Q.audio.enableHTML5Sound();
 
 //  Q.load(['blockbreak.png','blockbreak.json'], function() {
-  Q.load(['blockbreak.png', "brickDeath.mp3", "powerup.mp3", "powerdown.mp3"], function() {
-    // Q.compileSheets('blockbreak.png','blockbreak.json');  
-	Q.sheet("ball", "blockbreak.png", { tilew: 20, tileh: 20, sy: 0, sx: 0 });
-	Q.sheet("block", "blockbreak.png", { tilew: 40, tileh: 20, sy: 20, sx: 0 });
-	Q.sheet("paddle", "blockbreak.png", { tilew: 60, tileh: 20, sy: 40, sx: 0 });		 		 
+ // Q.load(['blockbreak.png', "brickDeath.mp3", "powerup.mp3", "powerdown.mp3"], function() {
+  Q.load({"blockbreak": "blockbreak.png", 
+          "brickDeath": "brickDeath.mp3",
+          "powerup": "powerup.mp3", 
+          "powerdown": "powerdown.mp3"}, function() {
+	Q.sheet("ball", "blockbreak", { tilew: 20, tileh: 20, sy: 0, sx: 0 });
+	Q.sheet("block", "blockbreak", { tilew: 40, tileh: 20, sy: 20, sx: 0 });
+	Q.sheet("paddle", "blockbreak", { tilew: 60, tileh: 20, sy: 40, sx: 0 });		 		 
     Q.scene('game',new Q.Scene(function(stage) {
       stage.insert(new Q.Paddle());
       stage.insert(new Q.Ball());
@@ -162,7 +177,7 @@ $(function() {
         }
       }
       stage.on('removeBlock',function() {
-        Q.audio.play('brickDeath.mp3');
+        Q.audio.play('brickDeath');
         blockCount--;  
         Q.state.inc("score",1);
         if(blockCount == 0) {
